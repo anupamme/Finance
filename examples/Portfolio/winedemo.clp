@@ -21,7 +21,7 @@
    (slot name)
    (slot value)
    (slot certainty (default 100.0))
-   (slot sector))
+   (multislot sector))
 
 (defrule MAIN::start
   (declare (salience 10000))
@@ -241,19 +241,19 @@
   (multislot fundCap (default any))
   (multislot fundPurpose (default any))
   (slot performance (default any))
-  (slot sector (default any)))
+  (multislot sector (default any)))
 
 (deffacts WINES::the-wine-list 
-  (wine (name "DSP Black Rock - Top 100 equity") (fundType equity) (fundCap large) (fundPurpose growth) (sector healthcare))
+  (wine (name "DSP Black Rock - Top 100 equity") (fundType equity) (fundCap large) (fundPurpose growth) (sector energy financial))
   (wine (name "Franklin India BlueChip") (fundType equity) (fundCap large) (fundPurpose growth) (sector services))
-  (wine (name "Franklin India Index NSE Nifty") (fundType equity) (fundCap large) (fundPurpose growth) (sector material))
+  (wine (name "Franklin India Index NSE Nifty") (fundType equity) (fundCap large) (fundPurpose growth) (sector material ))
   (wine (name "Goldman Sachs Nifty ETS 1") (fundType equity) (fundCap large) (fundPurpose growth) (sector capitalGoods))
   (wine (name "ICICI Prudential - Focussed BlueChip Equity") (fundType equity) (fundCap large) (fundPurpose growth) (sector conglomerates))
   (wine (name "Kotak - Sensex ETF 1") (fundType equity) (fundCap large) (fundPurpose growth) (sector construction))
 ;; mid cap funds.  
 (wine (name "Birla Sunlife - Frontline Equity") (fundType equity) (fundCap medium) (fundPurpose growth) (sector energy))
-  (wine (name "Fidelity Equity") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector financial))
-  (wine (name "Franklin India Prima Plus") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector healthcare))
+  (wine (name "Fidelity Equity") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector technology energy))
+  (wine (name "Franklin India Prima Plus") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector technology energy))
   (wine (name "HDFC - Top 200") (fundType equity) (fundCap medium large) (fundPurpose medium growth))
   (wine (name "Mirae Asset - India Opportunities") (fundType equity) (fundCap medium large) (fundPurpose medium growth))
   (wine (name "ICICI Prudential - Dynamic") (fundType equity) (fundCap small) (fundPurpose medium taxplanning))
@@ -274,12 +274,12 @@
         (fundCap $? ?b $?)
         (fundPurpose $? ?s $?)
 	(performance $?)
-	(sector ?comment))
+	(sector $?sec))
   (attribute (name best-fundType) (value ?c) (certainty ?certainty-1))
   (attribute (name best-fundCap) (value ?b) (certainty ?certainty-2))
   (attribute (name best-fundPurpose) (value ?s) (certainty ?certainty-3))
   =>
-  (assert (attribute (name wine) (value ?name) (sector ?comment)
+  (assert (attribute (name wine) (value ?name) (sector $?sec)
                      (certainty (min ?certainty-1 ?certainty-2 ?certainty-3)))))
 
 (deffunction WINES::wine-sort (?w1 ?w2)
@@ -291,5 +291,3 @@
                                (and (eq ?f:name wine)
                                     (>= ?f:certainty 20))))
   (sort wine-sort ?facts))
-  
-

@@ -569,30 +569,31 @@ public enum SectorType {
 	   	   
 	   */
 	   ArrayList<PrimitiveValue> intermed = new ArrayList<PrimitiveValue>();
-	   int totalSectors = 0;
+	   int selectedFunds = 0;
 	   int totalCertainty = 0;
 	   Set<SectorType> sectorsPresent = new HashSet<WineDemo.SectorType>();
 	   for (int i = 0; i < funds.size(); i++){
-		   if (totalSectors == numFundsTotal)
+		   if (selectedFunds == numFundsTotal)
 			   break;
-		   if (totalSectors > numFundsTotal) throw new Exception("Total Sectors cannot be greater than 3: " + totalSectors);
+		   if (selectedFunds > numFundsTotal) throw new Exception("Total Sectors cannot be greater than 3: " + selectedFunds);
 		   PrimitiveValue fv = funds.get(i);
 		   int certainty = fv.getFactSlot("certainty").numberValue().intValue();
-		   String sectorSet = fv.getFactSlot("sector").toString();
+		   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
 		   StringTokenizer st = new StringTokenizer(sectorSet, " ");
+		   boolean isThere = false;
 		   while(st.hasMoreTokens()){
 			   String sector = st.nextToken();
 			   SectorType secType = SectorType.valueOf(sector);
 			  if (secType == SectorType.any) continue;
-			 boolean isThere = false;
-			   if (!sectorsPresent.contains(secType) || totalSectors >= numFundsTotal){
-		   		   totalCertainty += certainty;
+			   if (!sectorsPresent.contains(secType) || selectedFunds >= numFundsTotal){
 				   sectorsPresent.add(secType);
-				   totalSectors++;
 				   isThere = true;
 			   }
-			  if (isThere)
-				intermed.add(fv);
+		   }
+		   if (isThere){
+			intermed.add(fv);
+			totalCertainty += certainty;
+			selectedFunds++;
 		   }
 	   }
 	   // 2. Decide the raio.
@@ -600,12 +601,20 @@ public enum SectorType {
        {
 		   PrimitiveValue fv = intermed.get(i);
 		   int certainty = fv.getFactSlot("certainty").numberValue().intValue(); 
-        
 		   String wineName = fv.getFactSlot("value").stringValue();
-		   String sectorSet = fv.getFactSlot("sector").toString();
+		   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
 		   FundInfo info = new FundInfo(wineName, ((double)certainty*100)/((double)totalCertainty), sectorSet);
 		   ret.add(info);
        }
 	   return ret;
+   }
+	
+   private static String StripBraces(String arg){
+	   if (arg.startsWith("(")){
+		   arg = arg.substring(1);
+		   if (arg.endsWith(")"))
+			   arg = arg.substring(0, arg.length() - 1);
+	   }
+	  return arg;
    } 
   }
