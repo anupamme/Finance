@@ -205,7 +205,8 @@
   (rule (if preferred-purpose is debt)
         (then best-fundPurpose is debt with certainty 40))
 
-  (rule (if preferred-purpose is growth)
+  
+(rule (if preferred-purpose is growth)
         (then best-fundPurpose is growth with certainty 40))
 
   (rule (if best-fundPurpose is growth and

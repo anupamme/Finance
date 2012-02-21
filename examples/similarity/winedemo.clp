@@ -20,7 +20,9 @@
 (deftemplate MAIN::attribute
    (slot name)
    (slot value)
-   (slot certainty (default 100.0)))
+   (slot certainty (default 100.0))
+   (slot performance)
+   (multislot sector))
 
 (defrule MAIN::start
   (declare (salience 10000))
@@ -79,7 +81,7 @@
 (defrule RULES::perform-rule-consequent-with-certainty
   ?f <- (rule (certainty ?c1) 
               (if) 
-              (then ?attribute is ?value with certainty ?c2 $?rest))
+              (then ?attribute is ?value  ?c2 $?rest))
   =>
   (modify ?f (then ?rest))
   (assert (attribute (name ?attribute) 
@@ -106,154 +108,56 @@
 (defrule CHOOSE-QUALITIES::startit => (focus RULES))
 
 (deffacts the-wine-rules
+; Rules for picking the best fundType
 
-  ; Rules for picking the best body
+	(rule (if preferred-fundType is equity)
+		(then best-fundType is equity  80 and
+		      best-fundType is hybrid  20))
+		
+	(rule (if preferred-fundType is hybrid)
+		(then best-fundType is equity  20 and
+		      best-fundType is hybrid  80))
+		
+	(rule (if preferred-fundType is unknown)
+		(then best-fundType is equity  40 and
+		      best-fundType is hybrid  40))
 
-  (rule (if preferred-goal1 is shortterm and preferred-goal2 is shortterm and preferred-goal3 is shortterm)
-        (then best-cap is large with certainty 90 and
-        	  best-color is hybrid with certainty 80 and
-        	  best-sweetness is debt with certainty 70))
-        	  
-    (rule (if preferred-goal1 is shortterm and preferred-goal2 is shortterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is hybrid and
-        	  best-sweetness is debt))
+; Rules for picking the best sector
 
-    (rule (if preferred-goal1 is shortterm and preferred-goal2 is shortterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is hybrid and
-        	  best-sweetness is debt))
-        	  
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is midterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is shortterm and preferred-goal2 is midterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is debt))
-        	  
-    (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is shortterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is debt))
-
-    (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is midterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is debt))
-        	  
-  (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is largeterm)
-        (then best-cap is small and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is midterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-	(rule (if preferred-goal1 is midterm and preferred-goal2 is midterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is midterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is longterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is longterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is midterm and preferred-goal2 is longterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is shortterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-                   
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is shortterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is shorterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is midterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-  
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is midterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is midterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is longterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is longterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-  (rule (if preferred-goal1 is longterm and preferred-goal2 is longterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
-
-(rule (if preferred-goal1 is unknown)
-        (then best-cap is small and
-                  best-color is equity and
-                  best-sweetness is growth))
-
-(rule (if preferred-goal2 is unknown)
-        (then best-cap is small and
-                  best-color is equity and
-                  best-sweetness is growth))
-
-(rule (if preferred-goal3 is unknown)
-        (then best-cap is small and
-                  best-color is equity and
-                  best-sweetness is growth))
+	(rule (if preferred-sector is material)
+		(then best-sector is material ))
+		
+	(rule (if preferred-sector is capitalGoods)
+		(then best-sector is capitalGoods ))
+		
+	(rule (if preferred-sector is conglomerates)
+		(then best-sector is conglomerates ))
+		
+	(rule (if preferred-sector is construction)
+		(then best-sector is construction ))
+		
+	(rule (if preferred-sector is energy)
+		(then best-sector is energy ))
+		
+	(rule (if preferred-sector is financial)
+		(then best-sector is financial ))
+		
+	(rule (if preferred-sector is healthcare)
+		(then best-sector is healthcare ))
+		
+	(rule (if preferred-sector is utilities)
+		(then best-sector is utilities ))
+		
+	(rule (if preferred-sector is transportation)
+		(then best-sector is transportation ))
+		
+	(rule (if preferred-sector is technology)
+		(then best-sector is technology ))
+		
+  	(rule (if preferred-sector is services)
+        	(then best-sector is services ))
 )
+
 ;;************************
 ;;* WINE SELECTION RULES *
 ;;************************
@@ -262,53 +166,57 @@
                  (export deffunction get-wine-list))
 
 (deffacts any-attributes
-  (attribute (name best-color) (value any))
-  (attribute (name best-cap) (value any))
-  (attribute (name best-sweetness) (value any)))
+  (attribute (name best-fundType) (value any))
+;  (attribute (name best-fundCap) (value any))
+;  (attribute (name best-fundPurpose) (value any))
+  (attribute (name best-sector) (value any)))
 
 (deftemplate WINES::wine
   (slot name (default ?NONE))
-  (multislot color (default any))
-  (multislot body (default any))
-  (multislot sweetness (default any)))
+  (multislot fundType (default any))
+  (multislot fundCap (default any))
+  (multislot fundPurpose (default any))
+  (slot performance (default any))
+  (multislot sector (default any)))
 
 (deffacts WINES::the-wine-list 
-  (wine (name "DSP Black Rock - Top 100 equity") (color equity) (body medium) (sweetness debt))
-  (wine (name "Franklin India BlueChip") (color hybrid) (body small) (sweetness growth))
-  (wine (name "Birla Sunlife - Frontline Equity") (color hybrid) (body medium) (sweetness growth))
-  (wine (name "Fidelity Equity") (color hybrid) (body medium large) (sweetness medium growth))
-  (wine (name "UTI Dividend Yield") (color hybrid) (body small) (sweetness medium growth))
-  (wine (name "AIG India Equity Regular") (color hybrid) (body small medium) (sweetness debt))
-  (wine (name "Templeton India Growth") (color hybrid) (body large))
-  (wine (name "DSP BlackRock - Equity Regular 2") (color hybrid) (body small) (sweetness debt))
-  (wine (name "IDBI Nifty Junior Index 3") (color equity) (body small))
-  (wine (name "DSP Blackrock - Small and Mid Cap") (color equity) (sweetness growth debt))
-  (wine (name "HDFC Mid Cap") (color equity) (sweetness growth debt))
-  (wine (name "DSP BlackRock MicroCap") (color equity) (body medium) (sweetness debt))
-  (wine (name "Fidelity Tax Advantage") (color equity) (body large))
-  (wine (name "AIG Infrastructure and Economic Reform") (color equity) (sweetness growth debt)))
+  (wine (name "DSP Black Rock - Top 100 equity") (fundType equity) (fundCap large) (fundPurpose growth) (sector technology healthcare) (performance 12))
+  (wine (name "Franklin India BlueChip") (fundType equity) (fundCap large) (fundPurpose growth) (sector financial technology services) (performance 14))
+  (wine (name "Franklin India Index NSE Nifty") (fundType equity) (fundCap large) (fundPurpose growth) (sector financial) (performance 11))
+  (wine (name "Goldman Sachs Nifty ETS 1") (fundType equity) (fundCap large) (fundPurpose growth) (sector capitalGoods financial) (performance 12))
+  (wine (name "ICICI Prudential - Focussed BlueChip Equity") (fundType equity) (fundCap large) (fundPurpose growth) (sector conglomerates))
+  (wine (name "Kotak - Sensex ETF 1") (fundType equity) (fundCap large) (fundPurpose growth) (sector construction))
+;; mid cap funds.  
+(wine (name "Birla Sunlife - Frontline Equity") (fundType equity) (fundCap medium) (fundPurpose growth) (sector energy))
+  (wine (name "Fidelity Equity") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector technology energy))
+  (wine (name "Franklin India Prima Plus") (fundType equity) (fundCap medium large) (fundPurpose medium growth) (sector financial technology))
+  (wine (name "HDFC - Top 200") (fundType equity) (fundCap medium large) (fundPurpose medium growth))
+  (wine (name "Mirae Asset - India Opportunities") (fundType equity) (fundCap medium large) (fundPurpose medium growth))
+  (wine (name "ICICI Prudential - Dynamic") (fundType equity) (fundCap small) (fundPurpose medium taxplanning))
+  (wine (name "UTI - Equity Div 2") (fundType equity) (fundCap small medium) (fundPurpose debt))
+  (wine (name "Templeton India Growth") (fundType hybrid) (fundCap large))
+  (wine (name "DSP BlackRock - Equity Regular 2") (fundType hybrid) (fundCap small) (fundPurpose debt))
+  (wine (name "IDBI Nifty Junior Index 3") (fundType equity) (fundCap small))
+  (wine (name "DSP Blackrock - Small and Mid Cap") (fundType equity) (fundPurpose taxplanning debt))
+  (wine (name "HDFC Mid Cap") (fundType equity) (fundPurpose taxplanning debt))
+  (wine (name "DSP BlackRock MicroCap") (fundType equity) (fundCap medium) (fundPurpose debt))
+  (wine (name "Fidelity Tax Advantage") (fundType equity) (fundCap large))
+  (wine (name "AIG Infrastructure and Economic Reform") (fundType equity) (fundPurpose taxplanning debt)))
   
   
 (defrule WINES::generate-wines
   (wine (name ?name)
-        (color $? ?c $?)
-        (body $? ?b $?)
-        (sweetness $? ?s $?))
-  (attribute (name best-color) (value ?c) (certainty ?certainty-1))
-  (attribute (name best-cap) (value ?b) (certainty ?certainty-2))
-  (attribute (name best-sweetness) (value ?s) (certainty ?certainty-3))
+        (fundType $?)
+        (fundCap $?)
+        (fundPurpose $?)
+	(performance ?p)
+	(sector $? ?sec $?))
+  (attribute (name best-sector) (value ?sec) (certainty ?certainty-1))
+  (attribute (name best-fundType) (value ?ftype) (certainty ?certainty-2))
   =>
-  (assert (attribute (name wine) (value ?name)
-                     (certainty (min ?certainty-1 ?certainty-2 ?certainty-3)))))
-
-(defrule WINES::generate-wines-all
-  (wine (name ?name)
-        (color $? ?c $?)
-        (body $? ?b $?)
-        (sweetness $? ?s $?))
-  =>
-  (assert (attribute (name wine) (value ?name)
-                     (certainty 100))))
+  (assert (attribute (name wine) (value ?name) (sector ?sec) (performance ?p))))
+;                     (certainty (min ?certainty-1 ?certainty-2)))))
+;                      (certainty ?certainty-1))))
 
 (deffunction WINES::wine-sort (?w1 ?w2)
    (< (fact-slot-value ?w1 certainty)
@@ -319,5 +227,3 @@
                                (and (eq ?f:name wine)
                                     (>= ?f:certainty 20))))
   (sort wine-sort ?facts))
-  
-

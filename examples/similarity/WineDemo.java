@@ -7,7 +7,10 @@ import java.awt.event.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
-
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 import CLIPSJNI.*;
 
 /* TBD module qualifier with find-all-facts */
@@ -46,28 +49,17 @@ class WineDemo implements ActionListener
    JFrame jfrm;
    
    DefaultTableModel wineList;
-  
-   JComboBox typeGoal1; 
-   JComboBox typeGoal2; 
-   JComboBox typeGoal3; 
-
-   JTextField amountGoal1;
-   JTextField amountGoal2;
-   JTextField amountGoal3;
+ 
+JComboBox preferredMutualFund; 
    
    JLabel jlab; 
 
-   String preferredGoalDuration[] = { "Don't Care", "Long Term (> 8 years)", "Mid Term (3-8 years)", 
-		   "Short Term (< 3 years)" }; 
-   
-   String preferredGoal1Choices[] = new String[4]; 
-   String preferredGoal2Choices[] = new String[4]; 
-   String preferredGoal3Choices[] = new String[4]; 
+String preferredMutualFundChoices[] = new String[3];
    
    ResourceBundle wineResources;
 
    Environment clips;
-   
+  public ArrayList<MutualFund> mfList = new ArrayList<WineDemo.MutualFund>(); 
    boolean isExecuting = false;
    Thread executionThread;
 
@@ -107,20 +99,35 @@ class WineDemo implements ActionListener
          return;
         }
 
-      preferredGoal1Choices[0] = wineResources.getString("Don'tCare"); 
-      preferredGoal1Choices[1] = wineResources.getString("LongTerm"); 
-      preferredGoal1Choices[2] = wineResources.getString("MidTerm");
-      preferredGoal1Choices[3] = wineResources.getString("ShortTerm");
+MutualFund mf = new MutualFund();
+     
+mf.name = "DSP Black Rock - Top 200 equity";
+      mf.typeArr = new FundType[1];
+      mf.typeArr[0] = FundType.equity;
+      mf.capArr = new FundCap[1];
+      mf.capArr[0] = FundCap.Large;
+      mf.purposeArr = new FundPurpose[1];
+      mf.purposeArr[0] = FundPurpose.ModerateGrowth;
+      mf.sectorArr = new SectorType[2];
+      mf.sectorArr[0] = SectorType.technology;
+      mf.sectorArr[1] = SectorType.financial;
+      mfList.add(mf);
       
-      preferredGoal2Choices[0] = wineResources.getString("Don'tCare"); 
-      preferredGoal2Choices[1] = wineResources.getString("LongTerm"); 
-      preferredGoal2Choices[2] = wineResources.getString("MidTerm");
-      preferredGoal2Choices[3] = wineResources.getString("ShortTerm");
+      mf = new MutualFund();
+      mf.name = "Franklin India Blue Chip";
+      mf.typeArr = new FundType[1];
+      mf.typeArr[0] = FundType.hybrid;
+      mf.capArr = new FundCap[1];
+      mf.capArr[0] = FundCap.Large;
+      mf.purposeArr = new FundPurpose[1];
+      mf.purposeArr[0] = FundPurpose.ModerateGrowth;
+      mf.sectorArr = new SectorType[2];
+      mf.sectorArr[0] = SectorType.services;
+      mf.sectorArr[1] = SectorType.healthcare;
+      mfList.add(mf); 
       
-      preferredGoal3Choices[0] = wineResources.getString("Don'tCare"); 
-      preferredGoal3Choices[1] = wineResources.getString("LongTerm"); 
-      preferredGoal3Choices[2] = wineResources.getString("MidTerm");
-      preferredGoal3Choices[3] = wineResources.getString("ShortTerm");
+      preferredMutualFundChoices[0] = mfList.get(0).name;
+      preferredMutualFundChoices[1] = mfList.get(1).name;
 
       /*===================================*/
       /* Create a new JFrame container and */
@@ -153,22 +160,12 @@ class WineDemo implements ActionListener
                                                                  wineResources.getString("PreferencesTitle"),
                                                                  TitledBorder.CENTER,
                                                                  TitledBorder.ABOVE_TOP));
- 
+
       preferencesPanel.add(new JLabel(wineResources.getString("ColorLabel")));
-      typeGoal1 = new JComboBox(preferredGoalDuration); 
-      preferencesPanel.add(typeGoal1);
-      typeGoal1.addActionListener(this);
-     
-      preferencesPanel.add(new JLabel(wineResources.getString("BodyLabel")));
-      typeGoal2 = new JComboBox(preferredGoalDuration); 
-      preferencesPanel.add(typeGoal2);
-      typeGoal2.addActionListener(this);
-
-      preferencesPanel.add(new JLabel(wineResources.getString("SweetnessLabel")));
-      typeGoal3 = new JComboBox(preferredGoalDuration); 
-      preferencesPanel.add(typeGoal3);
-      typeGoal3.addActionListener(this);
-
+      preferredMutualFund = new JComboBox(preferredMutualFundChoices); 
+      preferencesPanel.add(preferredMutualFund);
+      preferredMutualFund.addActionListener(this);
+ 
       /*========================*/
       /* Create the meal panel. */
       /*========================*/
@@ -200,8 +197,7 @@ class WineDemo implements ActionListener
 
       wineList.setDataVector(new Object[][] { },
                              new Object[] { wineResources.getString("WineTitle"), 
-                                            wineResources.getString("RecommendationTitle")});
-         
+        				"Performance", "Sector"}); 
       JTable table = 
          new JTable(wineList)
            {
@@ -229,14 +225,8 @@ class WineDemo implements ActionListener
       /*===================================================*/
       /* Initially select the first item in each ComboBox. */
       /*===================================================*/
+      preferredMutualFund.setSelectedIndex(0); 
        
-      typeGoal1.setSelectedIndex(0); 
-      typeGoal2.setSelectedIndex(0); 
-      typeGoal3.setSelectedIndex(0); 
-/*      mainCourse.setSelectedIndex(0);
-      sauce.setSelectedIndex(0);
-      flavor.setSelectedIndex(0);
-*/
       /*========================*/
       /* Load the wine program. */
       /*========================*/
@@ -278,8 +268,162 @@ class WineDemo implements ActionListener
      
    /***********/
    /* runWine */
-   /***********/  
+   /***********/
+/***********/  
    private void runWine() throws Exception
+     { 
+      
+      if (isExecuting) return;
+      
+      clips.reset();      
+      
+      int chosenIndex = preferredMutualFund.getSelectedIndex();
+      
+      MutualFund chosenFund;
+      if (chosenIndex == -1) chosenFund = null;
+      else chosenFund = this.mfList.get(chosenIndex);
+      
+      if (chosenFund != null){
+    	  for (int i = 0; i < chosenFund.sectorArr.length; i++){
+    		  SectorType sec = chosenFund.sectorArr[i];
+    		  {clips.assertString("(attribute (name preferred-sector) (value " + sec.toString()+ "))");}
+    	  } 
+    	  for (int i = 0; i < chosenFund.typeArr.length; i++){
+    		  FundType sec = chosenFund.typeArr[i];
+    		  {clips.assertString("(attribute (name preferred-fundType) (value " + sec.toString()+ "))");}
+    	  } 
+      }
+/*      
+      if (item.equals("Equity"))   
+        { clips.assertString("(attribute (name preferred-color) (value equity))"); }
+      else if (item.equals("Hybrid"))   
+        { clips.assertString("(attribute (name preferred-color) (value hybrid))"); }
+      else
+        { clips.assertString("(attribute (name preferred-color) (value unknown))"); }
+
+      item = preferredBodyNames[preferredBody.getSelectedIndex()];
+      if (item.equals("Small"))   
+        { clips.assertString("(attribute (name preferred-body) (value small))"); }
+      else if (item.equals("Medium"))   
+        { clips.assertString("(attribute (name preferred-body) (value medium))"); }
+      else if (item.equals("Large"))   
+        { clips.assertString("(attribute (name preferred-body) (value large))"); }
+      else
+        { clips.assertString("(attribute (name preferred-body) (value unknown))"); }
+ 
+      item = preferredGrowthnessNames[preferredGrowthness.getSelectedIndex()];
+      if (item.equals("TaxPlanning"))   
+        { clips.assertString("(attribute (name preferred-sweetness) (value taxplanning))"); }
+      else if (item.equals("Medium"))   
+        { clips.assertString("(attribute (name preferred-sweetness) (value debt))"); }
+      else if (item.equals("Growth"))   
+        { clips.assertString("(attribute (name preferred-sweetness) (value growth))"); }
+      else
+        { clips.assertString("(attribute (name preferred-sweetness) (value unknown))"); }
+
+      item = mainCourseNames[mainCourse.getSelectedIndex()];
+      if (item.equalsIgnoreCase("Retirement") ||
+          item.equalsIgnoreCase("ChildMarriage") ||
+          item.equalsIgnoreCase("LongTermGrowth"))
+        { 
+         clips.assertString("(attribute (name main-component) (value meat))"); 
+         clips.assertString("(attribute (name has-turkey) (value no))");
+        }
+      else if (item.equals("Emergency"))   
+        { 
+         clips.assertString("(attribute (name main-component) (value poultry))"); 
+         clips.assertString("(attribute (name has-turkey) (value yes))");
+        }
+      else if (item.equals("ChildEducation") ||
+               item.equals("Business"))   
+        { 
+         clips.assertString("(attribute (name main-component) (value poultry))"); 
+         clips.assertString("(attribute (name has-turkey) (value no))");
+        }
+      else if (item.equals("HigherEducation"))   
+        { 
+         clips.assertString("(attribute (name main-component) (value fish))"); 
+         clips.assertString("(attribute (name has-turkey) (value no))");
+        }
+      else if (item.equals("Other"))   
+        { 
+         clips.assertString("(attribute (name main-component) (value unknown))"); 
+         clips.assertString("(attribute (name has-turkey) (value no))");
+        }
+      else
+        { 
+         clips.assertString("(attribute (name main-component) (value unknown))"); 
+         clips.assertString("(attribute (name has-turkey) (value unknown))");
+        }
+
+      item = sauceNames[sauce.getSelectedIndex()];
+      if (item.equals("None"))   
+        { clips.assertString("(attribute (name has-sauce) (value no))"); }
+      else if (item.equals("Moderate"))   
+        { 
+         clips.assertString("(attribute (name has-sauce) (value yes))");
+         clips.assertString("(attribute (name sauce) (value spicy))");
+        }
+      else if (item.equals("Bold"))   
+        { 
+         clips.assertString("(attribute (name has-sauce) (value yes))");
+         clips.assertString("(attribute (name sauce) (value sweet))");
+        }
+      else if (item.equals("Aggressive"))   
+        { 
+         clips.assertString("(attribute (name has-sauce) (value yes))");
+         clips.assertString("(attribute (name sauce) (value cream))");
+        }
+      else if (item.equals("Blind"))   
+        { 
+         clips.assertString("(attribute (name has-sauce) (value yes))");
+         clips.assertString("(attribute (name sauce) (value unknown))");
+        }
+      else
+        { 
+         clips.assertString("(attribute (name has-sauce) (value unknown))");
+         clips.assertString("(attribute (name sauce) (value unknown))");
+        }
+
+      item = flavorNames[flavor.getSelectedIndex()];
+      if (item.equals("ShortTerm"))   
+        { clips.assertString("(attribute (name tastinessa) (value delicate))"); }
+      else if (item.equals("MidTerm")) 
+        { clips.assertString("(attribute (name tastinessa) (value average))"); }
+      else if (item.equals("LongTerm"))   
+        { clips.assertString("(attribute (name tastinessa) (value strong))"); }
+      else
+        { clips.assertString("(attribute (name tastinessa) (value unknown))"); }
+ */     
+      Runnable runThread = 
+         new Runnable()
+           {
+            public void run()
+              {
+               clips.run();
+               
+               SwingUtilities.invokeLater(
+                  new Runnable()
+                    {
+                     public void run()
+                       {
+                        try 
+                          { updateWines(); }
+                        catch (Exception e)
+                          { e.printStackTrace(); }
+                       }
+                    });
+              }
+           };
+      
+      isExecuting = true;
+      
+      executionThread = new Thread(runThread);
+      
+      executionThread.start();
+     }
+  
+/*   private void runWine() throws Exception
      { 
       String item;
       
@@ -345,7 +489,7 @@ class WineDemo implements ActionListener
       executionThread = new Thread(runThread);
       
       executionThread.start();
-     }
+     }*/
      
    /***************/
    /* updateWines */
@@ -357,17 +501,20 @@ class WineDemo implements ActionListener
       PrimitiveValue pv = clips.eval(evalStr);
                
       wineList.setRowCount(0);
-      
-      for (int i = 0; i < pv.size(); i++) 
-        {
-         PrimitiveValue fv = pv.get(i);
 
-         int certainty = fv.getFactSlot("certainty").numberValue().intValue(); 
-         
-         String wineName = fv.getFactSlot("value").stringValue();
-                  
-         wineList.addRow(new Object[] { wineName, new Integer(certainty) });
-        }  
+    ArrayList<FundInfo> fInfo = this.Portfolioize(pv);
+
+      for (int i = 0; i < fInfo.size(); i++)
+        {
+         FundInfo fv = fInfo.get(i);
+
+         double certainty = fv.ratio;
+
+         String wineName = fv.name == null ? "" : fv.name;
+         String sector = fv.sector == null ? "" : fv.sector;
+
+         wineList.addRow(new Object[] { wineName + ":" + Double.toString(certainty), certainty, sector });
+        }
         
       jfrm.pack();
       
@@ -390,5 +537,93 @@ class WineDemo implements ActionListener
           {  
            public void run() { new WineDemo(); }  
           });   
-     }  
+     }
+
+public enum SectorType {
+           any,
+           material,
+           capitalGoods,
+           conglomerates,
+           construction,
+           energy,
+           financial,
+           healthcare,
+           services,
+           technology,
+           transportation,
+           utilities
+   }
+
+   class FundInfo {
+           String name;
+           double ratio;
+           ArrayList<SectorType> sectorList;
+           String sector;
+
+           public FundInfo(String name, double ratio, String sec){
+                   this.name = name;
+                   this.ratio = ratio;
+                   this.sector = sec;
+           }
+   }
+ArrayList<FundInfo> Portfolioize(PrimitiveValue funds) throws Exception{
+           ArrayList<FundInfo> ret = new ArrayList<WineDemo.FundInfo>();
+           /* 1. select the portfolio.
+                  Rules: 1. Pick min 3 sectors.
+                  2. Recommendation > 40%.
+
+           */
+           // 2. Decide the raio.
+           for (int i = 0; i < funds.size(); i++)
+       {
+                   PrimitiveValue fv = funds.get(i);
+		   PrimitiveValue val = fv.getFactSlot("performance");
+		   if (SectorType.any.toString().equals(val.toString())) continue;
+                   double certainty = val == null ? 0 : val.numberValue().doubleValue();
+                   String wineName = fv.getFactSlot("value").stringValue();
+                   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
+		   if (SectorType.any.toString().equals(sectorSet)) continue;
+                   FundInfo info = new FundInfo(wineName, certainty, sectorSet);
+                   ret.add(info);
+       }
+           return ret;
+   }
+
+private static String StripBraces(String arg){
+           if (arg.startsWith("(")){
+                   arg = arg.substring(1);
+                   if (arg.endsWith(")"))
+                           arg = arg.substring(0, arg.length() - 1);
+           }
+          return arg;
+   }
+ 
+public enum FundType {
+	   notinit,
+	   equity,
+	   hybrid
+   }
+   
+   public enum FundCap {
+	  NotInit,
+	  Small,
+	  Mid,
+	  Large	  
+   }
+   
+   public enum FundPurpose {
+	  NotInit,
+	  HighGrowth,
+	  TaxPlanning,
+	  ModerateGrowth
+   }
+   
+   public class MutualFund {
+	   public String name;
+	   public FundType[] typeArr;
+	   public FundCap[] capArr;
+	   public FundPurpose[] purposeArr;
+	   public double yoy;
+	   public SectorType[] sectorArr;
+   } 
   }
