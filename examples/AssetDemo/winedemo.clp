@@ -115,54 +115,54 @@
         	  best-sweetness is debt with certainty 70))
         	  
     (rule (if preferred-goal1 is shortterm and preferred-goal2 is shortterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is hybrid and
-        	  best-sweetness is debt))
+        (then best-cap is medium with certainty 70 and
+        	  best-color is hybrid with certainty 50 and
+        	  best-sweetness is debt with certainty 60))
 
     (rule (if preferred-goal1 is shortterm and preferred-goal2 is shortterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is hybrid and
-        	  best-sweetness is debt))
+        (then best-cap is small with certainty 40 and
+        	  best-color is hybrid with certainty 50 and
+        	  best-sweetness is debt with certainty 50))
         	  
   (rule (if preferred-goal1 is longterm and preferred-goal2 is midterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is equity and
-        	  best-sweetness is growth))
+        (then best-cap is large with certainty 50 and
+        	  best-color is equity with certainty 55 and
+        	  best-sweetness is growth with certainty 65))
 
   (rule (if preferred-goal1 is shortterm and preferred-goal2 is midterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is equity and
-        	  best-sweetness is debt))
+        (then best-cap is medium with certainty 60 and
+        	  best-color is equity with certainty 65 and
+        	  best-sweetness is debt with certainty 70))
         	  
     (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is shortterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is debt))
+        (then best-cap is small with certainty 30 and
+        	  best-color is equity with certainty 30 and
+        	  best-sweetness is debt with certainty 45))
 
     (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is midterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is debt))
+        (then best-cap is small with certainty 20 and
+        	  best-color is equity with certainty 80 and
+        	  best-sweetness is debt with certainty 90))
         	  
   (rule (if preferred-goal1 is shortterm and preferred-goal2 is longterm and preferred-goal3 is longterm)
-        (then best-cap is small and
-        	  best-color is equity and
-        	  best-sweetness is growth))
+        (then best-cap is small with certainty 75 and
+        	  best-color is equity with certainty 80 and
+        	  best-sweetness is growth with certainty 90)) 
 
   (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is shortterm)
-        (then best-cap is large and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
+        (then best-cap is large with certainty 85 and
+        	  best-color is hybrid with certainty 90 and
+        	  best-sweetness is growth with certainty 75))
 
   (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is midterm)
-        (then best-cap is medium and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
+        (then best-cap is medium with certainty 65 and
+        	  best-color is hybrid with certainty 55 and
+        	  best-sweetness is growth with certainty 45))
 
   (rule (if preferred-goal1 is midterm and preferred-goal2 is shortterm and preferred-goal3 is largeterm)
-        (then best-cap is small and
-        	  best-color is hybrid and
-        	  best-sweetness is growth))
+        (then best-cap is small with certainty 70 and
+        	  best-color is hybrid with certainty 90 and
+        	  best-sweetness is growth with certainty 100))
 
   (rule (if preferred-goal1 is midterm and preferred-goal2 is midterm and preferred-goal3 is shortterm)
         (then best-cap is large and

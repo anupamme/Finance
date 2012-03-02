@@ -4,13 +4,15 @@ import javax.swing.table.*;
 import java.awt.*; 
 import java.awt.event.*; 
  
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Set;
+import java.util.HashSet;
+
+
 import CLIPSJNI.*;
 
 /* TBD module qualifier with find-all-facts */
@@ -49,17 +51,25 @@ class WineDemo implements ActionListener
    JFrame jfrm;
    
    DefaultTableModel wineList;
- 
-JComboBox preferredMutualFund; 
+  
+   JTextField preferredColor; 
+   JTextField preferredBody; 
+   JTextField preferredGrowthness; 
+   
+   JComboBox mainCourse; 
+   JComboBox riskappetite; 
+   JComboBox flavor; 
    
    JLabel jlab; 
 
-String preferredMutualFundChoices[] = new String[3];
-   
+   String mainCourseChoices[] = new String[9];
+   String riskappetiteChoices[] = new String[6];
+   String flavorChoices[] = new String[10];
+
    ResourceBundle wineResources;
 
    Environment clips;
-  public ArrayList<MutualFund> mfList = new ArrayList<WineDemo.MutualFund>(); 
+   
    boolean isExecuting = false;
    Thread executionThread;
 
@@ -98,52 +108,34 @@ String preferredMutualFundChoices[] = new String[3];
          mre.printStackTrace();
          return;
         }
-
-MutualFund mf = new MutualFund();
-     
-mf.name = "DSP Black Rock - Top 200 equity";
-      mf.typeArr = new FundType[1];
-      mf.typeArr[0] = FundType.equity;
-      mf.capArr = new FundCap[1];
-      mf.capArr[0] = FundCap.Large;
-      mf.purposeArr = new FundPurpose[1];
-      mf.purposeArr[0] = FundPurpose.ModerateGrowth;
-      mf.sectorArr = new SectorType[2];
-      mf.sectorArr[0] = SectorType.technology;
-      mf.sectorArr[1] = SectorType.financial;
-      mfList.add(mf);
       
-      mf = new MutualFund();
-      mf.name = "Franklin India Blue Chip";
-      mf.typeArr = new FundType[1];
-      mf.typeArr[0] = FundType.hybrid;
-      mf.capArr = new FundCap[1];
-      mf.capArr[0] = FundCap.Large;
-      mf.purposeArr = new FundPurpose[1];
-      mf.purposeArr[0] = FundPurpose.ModerateGrowth;
-      mf.sectorArr = new SectorType[2];
-      mf.sectorArr[0] = SectorType.services;
-      mf.sectorArr[1] = SectorType.healthcare;
-      mfList.add(mf); 
-    
-      mf = new MutualFund();
-      mf.name = "Goldman Sachs Nifty ETS 1";
-      mf.typeArr = new FundType[2];
-      mf.typeArr[0] = FundType.hybrid;
-      mf.typeArr[1] = FundType.equity;
-      mf.capArr = new FundCap[2];
-      mf.capArr[0] = FundCap.Large;
-      mf.capArr[1] = FundCap.Mid;
-      mf.purposeArr = new FundPurpose[1];
-      mf.purposeArr[0] = FundPurpose.ModerateGrowth;
-      mf.sectorArr = new SectorType[2];
-      mf.sectorArr[0] = SectorType.technology;
-      mf.sectorArr[1] = SectorType.material;
-      mfList.add(mf); 
+      mainCourseChoices[0] = "0"; 
+      mainCourseChoices[1] = "5000"; 
+      mainCourseChoices[2] = "10000"; 
+      mainCourseChoices[3] = "15000"; 
+      mainCourseChoices[4] = "20000"; 
+      mainCourseChoices[5] = "25000"; 
+      mainCourseChoices[6] = "30000"; 
+      mainCourseChoices[7] = "35000"; 
+      mainCourseChoices[8] = "40000"; 
+   
+      riskappetiteChoices[0] = "0"; 
+      riskappetiteChoices[1] = "2"; 
+      riskappetiteChoices[2] = "5"; 
+      riskappetiteChoices[3] = "7"; 
+      riskappetiteChoices[4] = "10"; 
+      riskappetiteChoices[5] = "12"; 
 
-      preferredMutualFundChoices[0] = mfList.get(0).name;
-      preferredMutualFundChoices[1] = mfList.get(1).name;
-      preferredMutualFundChoices[2] = mfList.get(2).name;
+      flavorChoices[0] = "0"; 
+      flavorChoices[1] = "1";
+      flavorChoices[2] = "2";
+      flavorChoices[3] = "3";
+      flavorChoices[4] = "4";
+      flavorChoices[5] = "5";
+      flavorChoices[6] = "6";
+      flavorChoices[7] = "7";
+      flavorChoices[8] = "8";
+      flavorChoices[9] = "9";
 
       /*===================================*/
       /* Create a new JFrame container and */
@@ -176,12 +168,22 @@ mf.name = "DSP Black Rock - Top 200 equity";
                                                                  wineResources.getString("PreferencesTitle"),
                                                                  TitledBorder.CENTER,
                                                                  TitledBorder.ABOVE_TOP));
-
-      preferencesPanel.add(new JLabel(wineResources.getString("ColorLabel")));
-      preferredMutualFund = new JComboBox(preferredMutualFundChoices); 
-      preferencesPanel.add(preferredMutualFund);
-      preferredMutualFund.addActionListener(this);
  
+      preferencesPanel.add(new JLabel(wineResources.getString("ColorLabel")));
+      preferredColor = new JTextField("Interest Rate"); 
+      preferencesPanel.add(preferredColor);
+      preferredColor.addActionListener(this);
+     
+      preferencesPanel.add(new JLabel(wineResources.getString("BodyLabel")));
+      preferredBody = new JTextField("Sample2"); 
+      preferencesPanel.add(preferredBody);
+      preferredBody.addActionListener(this);
+
+      preferencesPanel.add(new JLabel(wineResources.getString("SweetnessLabel")));
+      preferredGrowthness = new JTextField("Maturity Amount"); 
+      preferencesPanel.add(preferredGrowthness);
+      preferredGrowthness.addActionListener(this);
+
       /*========================*/
       /* Create the meal panel. */
       /*========================*/
@@ -193,6 +195,21 @@ mf.name = "DSP Black Rock - Top 200 equity";
                                                                  wineResources.getString("MealTitle"),
                                                                  TitledBorder.CENTER,
                                                                  TitledBorder.ABOVE_TOP));
+ 
+      mealPanel.add(new JLabel(wineResources.getString("MainCourseLabel")));
+      mainCourse = new JComboBox(mainCourseChoices); 
+      mealPanel.add(mainCourse);
+      mainCourse.addActionListener(this);
+    
+      mealPanel.add(new JLabel(wineResources.getString("SauceLabel")));
+      riskappetite = new JComboBox(riskappetiteChoices); 
+      mealPanel.add(riskappetite);
+      riskappetite.addActionListener(this);
+
+      mealPanel.add(new JLabel(wineResources.getString("FlavorLabel")));
+      flavor = new JComboBox(flavorChoices); 
+      mealPanel.add(flavor);
+      flavor.addActionListener(this);
       
       /*==============================================*/
       /* Create a panel including the preferences and */
@@ -202,6 +219,7 @@ mf.name = "DSP Black Rock - Top 200 equity";
       JPanel choicesPanel = new JPanel(); 
       choicesPanel.setLayout(new FlowLayout());
       choicesPanel.add(preferencesPanel);
+      choicesPanel.add(mealPanel);
       
       jfrm.getContentPane().add(choicesPanel); 
  
@@ -213,7 +231,9 @@ mf.name = "DSP Black Rock - Top 200 equity";
 
       wineList.setDataVector(new Object[][] { },
                              new Object[] { wineResources.getString("WineTitle"), 
-        				"Performance", "Sector"}); 
+                                            wineResources.getString("RecommendationTitle"),
+					    "Comments"});
+         
       JTable table = 
          new JTable(wineList)
            {
@@ -241,8 +261,11 @@ mf.name = "DSP Black Rock - Top 200 equity";
       /*===================================================*/
       /* Initially select the first item in each ComboBox. */
       /*===================================================*/
-      preferredMutualFund.setSelectedIndex(0); 
        
+      mainCourse.setSelectedIndex(0);
+      riskappetite.setSelectedIndex(0);
+      flavor.setSelectedIndex(0);
+
       /*========================*/
       /* Load the wine program. */
       /*========================*/
@@ -284,31 +307,35 @@ mf.name = "DSP Black Rock - Top 200 equity";
      
    /***********/
    /* runWine */
-   /***********/
-/***********/  
+   /***********/  
    private void runWine() throws Exception
      { 
+      String item;
       
       if (isExecuting) return;
       
       clips.reset();      
+            
       
-      int chosenIndex = preferredMutualFund.getSelectedIndex();
-      
-      MutualFund chosenFund;
-      if (chosenIndex == -1) chosenFund = null;
-      else chosenFund = this.mfList.get(chosenIndex);
-      
-      if (chosenFund != null){
-    	  for (int i = 0; i < chosenFund.sectorArr.length; i++){
-    		  SectorType sec = chosenFund.sectorArr[i];
-    		  {clips.assertString("(attribute (name preferred-sector) (value " + sec.toString()+ "))");}
-    	  } 
-    	  for (int i = 0; i < chosenFund.typeArr.length; i++){
-    		  FundType sec = chosenFund.typeArr[i];
-    		  {clips.assertString("(attribute (name preferred-fundType) (value " + sec.toString()+ "))");}
-    	  } 
-      }
+
+      item = mainCourseChoices[mainCourse.getSelectedIndex()];
+      double monthly = Double.parseDouble(item);
+
+      item = riskappetiteChoices[riskappetite.getSelectedIndex()];
+      double increase = Double.parseDouble(item);
+
+      item = flavorChoices[flavor.getSelectedIndex()];
+      int years = Integer.parseInt(item);
+      double rate = years + 2;
+      String tmp = new Double(rate).toString();
+      preferredColor.setText(tmp);
+	double final1 = ComputeTotal(monthly, increase, years, rate);
+	String rateStr = new Double(rate).toString();
+	preferredGrowthness.setText(new Double(final1).toString());	
+     	String str = "(attribute (name rate) (value " + rateStr + "))";
+	preferredBody.setText(str);
+	clips.assertString(str);
+ 
       Runnable runThread = 
          new Runnable()
            {
@@ -336,74 +363,6 @@ mf.name = "DSP Black Rock - Top 200 equity";
       
       executionThread.start();
      }
-  
-/*   private void runWine() throws Exception
-     { 
-      String item;
-      
-      if (isExecuting) return;
-      
-      clips.reset();      
-            
-      item = preferredGoal1Choices[typeGoal1.getSelectedIndex()];
-      
-      if (item.equals("LongTerm"))   
-        { clips.assertString("(attribute (name preferred-goal1) (value longterm))"); }
-      else if (item.equals("MidTerm"))   
-        { clips.assertString("(attribute (name preferred-goal1) (value midterm))"); }
-      else if (item.equals("ShortTerm"))   
-      { clips.assertString("(attribute (name preferred-goal1) (value shortterm))"); }
-      else
-        { clips.assertString("(attribute (name preferred-goal1) (value unknown))"); }
-
-      item = preferredGoal2Choices[typeGoal2.getSelectedIndex()];
-      
-      if (item.equals("LongTerm"))   
-      { clips.assertString("(attribute (name preferred-goal2) (value longterm))"); }
-      else if (item.equals("MidTerm"))   
-      { clips.assertString("(attribute (name preferred-goal2) (value midterm))"); }
-      else if (item.equals("ShortTerm"))   
-      { clips.assertString("(attribute (name preferred-goal2) (value shortterm))"); }
-      else
-      { clips.assertString("(attribute (name preferred-goal2) (value unknown))"); }
- 
-      item = preferredGoal3Choices[typeGoal3.getSelectedIndex()];
-      if (item.equals("LongTerm"))   
-      { clips.assertString("(attribute (name preferred-goal3) (value longterm))"); }
-    else if (item.equals("MidTerm"))   
-      { clips.assertString("(attribute (name preferred-goal3) (value midterm))"); }
-    else if (item.equals("ShortTerm"))   
-    { clips.assertString("(attribute (name preferred-goal3) (value shortterm))"); }
-    else
-      { clips.assertString("(attribute (name preferred-goal3) (value unknown))"); }
-
-      Runnable runThread = 
-         new Runnable()
-           {
-            public void run()
-              {
-               clips.run();
-               
-               SwingUtilities.invokeLater(
-                  new Runnable()
-                    {
-                     public void run()
-                       {
-                        try 
-                          { updateWines(); }
-                        catch (Exception e)
-                          { e.printStackTrace(); }
-                       }
-                    });
-              }
-           };
-      
-      isExecuting = true;
-      
-      executionThread = new Thread(runThread);
-      
-      executionThread.start();
-     }*/
      
    /***************/
    /* updateWines */
@@ -415,21 +374,36 @@ mf.name = "DSP Black Rock - Top 200 equity";
       PrimitiveValue pv = clips.eval(evalStr);
                
       wineList.setRowCount(0);
-
-    ArrayList<FundInfo> fInfo = this.Portfolioize(pv);
-
-      for (int i = 0; i < fInfo.size(); i++)
+      
+      ArrayList<FundInfo> fInfo = this.Portfolioize(pv);
+      
+      for (int i = 0; i < fInfo.size(); i++) 
         {
          FundInfo fv = fInfo.get(i);
 
-         double certainty = fv.ratio;
-
+         double certainty = fv.ratio; 
+         
          String wineName = fv.name == null ? "" : fv.name;
          String sector = fv.sector == null ? "" : fv.sector;
-
+                  
          wineList.addRow(new Object[] { wineName + ":" + Double.toString(certainty), certainty, sector });
-        }
-        
+        } 
+/*
+	for (int i = 0; i < pv.size(); i++) 
+        {
+         PrimitiveValue fv = pv.get(i);
+
+         int certainty = fv.getFactSlot("certainty").numberValue().intValue(); 
+         
+         String wineName = fv.getFactSlot("value").stringValue();
+         PrimitiveValue obj = fv.getFactSlot("sector");         
+        String comm = ""; 
+	if (obj != null)
+		comm = obj.toString();
+	
+	wineList.addRow(new Object[] { wineName, new Integer(certainty), comm });
+        }  
+*/        
       jfrm.pack();
       
       executionThread = null;
@@ -454,90 +428,94 @@ mf.name = "DSP Black Rock - Top 200 equity";
      }
 
 public enum SectorType {
-           any,
-           material,
-           capitalGoods,
-           conglomerates,
-           construction,
-           energy,
-           financial,
-           healthcare,
-           services,
-           technology,
-           transportation,
-           utilities
+	   any,
+	   material,
+	   capitalGoods,
+	   conglomerates,
+	   construction,
+	   energy,
+	   financial,
+	   healthcare,
+	   services,
+	   technology,
+	   transportation,
+	   utilities   
    }
-
+   
    class FundInfo {
-           String name;
-           double ratio;
-           ArrayList<SectorType> sectorList;
-           String sector;
-
-           public FundInfo(String name, double ratio, String sec){
-                   this.name = name;
-                   this.ratio = ratio;
-                   this.sector = sec;
-           }
+	   String name;
+	   double ratio;
+	   ArrayList<SectorType> sectorList;
+	   String sector;
+	   
+	   public FundInfo(String name, double ratio, String sec){
+		   this.name = name;
+		   this.ratio = ratio;
+		   this.sector = sec;
+	   }
    }
-ArrayList<FundInfo> Portfolioize(PrimitiveValue funds) throws Exception{
-           ArrayList<FundInfo> ret = new ArrayList<WineDemo.FundInfo>();
-           /* 1. select the portfolio.
-                  Rules: 1. Pick min 3 sectors.
-                  2. Recommendation > 40%.
-
-           */
-           // 2. Decide the raio.
-           for (int i = 0; i < funds.size(); i++)
+	int numFundsTotal = 5;
+   ArrayList<FundInfo> Portfolioize(PrimitiveValue funds) throws Exception{
+	   ArrayList<FundInfo> ret = new ArrayList<WineDemo.FundInfo>();
+	   /* 1. select the portfolio.
+	   	  Rules: 1. Pick min 3 sectors. 
+	   	  2. Recommendation > 40%.
+	   	   
+	   */
+	   ArrayList<PrimitiveValue> intermed = new ArrayList<PrimitiveValue>();
+	   int selectedFunds = 0;
+	   int totalCertainty = 0;
+	   Set<SectorType> sectorsPresent = new HashSet<WineDemo.SectorType>();
+	   for (int i = 0; i < funds.size(); i++){
+		   if (selectedFunds == numFundsTotal)
+			   break;
+		   if (selectedFunds > numFundsTotal) throw new Exception("Total Sectors cannot be greater than 3: " + selectedFunds);
+		   PrimitiveValue fv = funds.get(i);
+		   int certainty = fv.getFactSlot("certainty").numberValue().intValue();
+		   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
+		   StringTokenizer st = new StringTokenizer(sectorSet, " ");
+		   boolean isThere = false;
+		   while(st.hasMoreTokens()){
+			   String sector = st.nextToken();
+			   SectorType secType = SectorType.valueOf(sector);
+			  if (secType == SectorType.any) continue;
+			   if (!sectorsPresent.contains(secType) || selectedFunds >= numFundsTotal){
+				   sectorsPresent.add(secType);
+				   isThere = true;
+			   }
+		   }
+		   if (isThere){
+			intermed.add(fv);
+			totalCertainty += certainty;
+			selectedFunds++;
+		   }
+	   }
+	   // 2. Decide the raio.
+	   for (int i = 0; i < intermed.size(); i++) 
        {
-                   PrimitiveValue fv = funds.get(i);
-		   PrimitiveValue val = fv.getFactSlot("performance");
-		   if (SectorType.any.toString().equals(val.toString())) continue;
-                   double certainty = val == null ? 0 : val.numberValue().doubleValue();
-                   String wineName = fv.getFactSlot("value").stringValue();
-                   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
-		   if (SectorType.any.toString().equals(sectorSet)) continue;
-                   FundInfo info = new FundInfo(wineName, certainty, sectorSet);
-                   ret.add(info);
+		   PrimitiveValue fv = intermed.get(i);
+		   int certainty = fv.getFactSlot("certainty").numberValue().intValue(); 
+		   String wineName = fv.getFactSlot("value").stringValue();
+		   String sectorSet = StripBraces(fv.getFactSlot("sector").toString());
+		   FundInfo info = new FundInfo(wineName, ((double)certainty*100)/((double)totalCertainty), sectorSet);
+		   ret.add(info);
        }
-           return ret;
+	   return ret;
+   }
+	
+   private static String StripBraces(String arg){
+	   if (arg.startsWith("(")){
+		   arg = arg.substring(1);
+		   if (arg.endsWith(")"))
+			   arg = arg.substring(0, arg.length() - 1);
+	   }
+	  return arg;
    }
 
-private static String StripBraces(String arg){
-           if (arg.startsWith("(")){
-                   arg = arg.substring(1);
-                   if (arg.endsWith(")"))
-                           arg = arg.substring(0, arg.length() - 1);
-           }
-          return arg;
-   }
- 
-public enum FundType {
-	   notinit,
-	   equity,
-	   hybrid
-   }
-   
-   public enum FundCap {
-	  NotInit,
-	  Small,
-	  Mid,
-	  Large	  
-   }
-   
-   public enum FundPurpose {
-	  NotInit,
-	  HighGrowth,
-	  TaxPlanning,
-	  ModerateGrowth
-   }
-   
-   public class MutualFund {
-	   public String name;
-	   public FundType[] typeArr;
-	   public FundCap[] capArr;
-	   public FundPurpose[] purposeArr;
-	   public double yoy;
-	   public SectorType[] sectorArr;
+   private static double ComputeTotal(double monthly, double inc, int years, double rate){
+	
+	   double monthlyrate = rate/12.0;
+	   double res = (monthly * 12 * (double) years) * ( 1 + rate/100.0) * (1 + (years * inc)/100.0);
+	   return res;
    } 
   }
